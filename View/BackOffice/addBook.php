@@ -9,7 +9,12 @@ if(isset($_POST['title']) && isset($_POST['author'])&& isset($_POST['publication
 {
   if (!empty($_POST['title']) && !empty($_POST['author'])&& !empty($_POST['publication_date'])&& !empty($_POST['language'])&&!empty($_POST['status']) && !empty($_POST['number_of_copies']) && !empty($_POST['category']))
   {
-    $book1= new Book($_POST['title'],$_POST['author'],new DateTime($_POST['publication_date']),$_POST['language'],$_POST['status'],(int)$_POST['number_of_copies'],$_POST['category']);
+    $book1= new Book($_POST['title'],
+    $_POST['author'],
+    new DateTime($_POST['publication_date']),
+    $_POST['language'],$_POST['status'],
+    (int)$_POST['number_of_copies'],
+    $_POST['category']);
     
     $bookC->addBook($book1);
     header('Location:ListBook.php');
@@ -109,7 +114,10 @@ if(isset($_POST['title']) && isset($_POST['author'])&& isset($_POST['publication
             </a>
             <ul id="ddmenu_5" class="collapse dropdown-nav">
               <li>
-                <a href="addBook.html"> ADD</a>
+                <a href="ListBook.php"> BookList</a>
+              </li>
+              <li>
+                <a href="addBook.php"> ADD</a>
               </li>
             </ul>
           </li>

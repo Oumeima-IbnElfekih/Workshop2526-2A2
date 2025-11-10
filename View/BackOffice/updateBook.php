@@ -1,17 +1,50 @@
 <?php
 include '../../controller/BookController.php';
-$bookC = new BookController();
-$list = $bookC->listebook();
-?>
+require_once __DIR__ . '/../../Model/Book.php';
 
+$error = '';
+
+$bookC = new BookController();
+
+$book = $bookC->getbook($_POST['id']);
+
+if (
+    isset($_POST['id'], $_POST['title'], $_POST['author'], $_POST['publication_date'], $_POST['language'], $_POST['status'], $_POST['copies'], $_POST['category'])
+) {
+    if (
+        !empty($_POST['id']) && !empty($_POST['title']) && !empty($_POST['author']) && !empty($_POST['publication_date'])
+        && !empty($_POST['language']) && !empty($_POST['status']) && !empty($_POST['copies']) && !empty($_POST['category'])
+    ) {
+        $book = new Book(
+            $_POST['title'],
+            $_POST['author'] ,
+            new DateTime($_POST['publication_date'] ?? 'now'),
+            $_POST['language'] ,     // langue
+            $_POST['status'],
+            (int)$_POST['copies'],
+            $_POST['category'] 
+        );
+       // print_r($book);
+        $bookC->updateBook($book, $_POST['id']);
+        header('Location:ListBook.php');
+        
+    }
+    
+    else
+    {
+        $error= 'please enter data';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+ <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="assets/images/favicon.svg" type="image/x-icon" />
-    <title>Esprit Book | Book List</title>
+    <title>Esprit Book | Update</title>
+  
 
     <!-- ========== All CSS files linkup ========= -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
@@ -23,9 +56,7 @@ $list = $bookC->listebook();
   </head>
   <body>
     <!-- ======== Preloader =========== -->
-    <div id="preloader">
-      <div class="spinner"></div>
-    </div>
+   
     <!-- ======== Preloader =========== -->
 
     <!-- ======== sidebar-nav start =========== -->
@@ -89,7 +120,7 @@ $list = $bookC->listebook();
             </a>
             <ul id="ddmenu_5" class="collapse dropdown-nav">
               <li>
-                <a href="ListBook.php"> BookList</a>
+                <a href="ListBook.php"> Book List</a>
               </li>
               <li>
                 <a href="addBook.php"> ADD</a>
@@ -101,10 +132,7 @@ $list = $bookC->listebook();
      
     </aside>
     <div class="overlay"></div>
-    <!-- ======== sidebar-nav end =========== -->
-
-    <!-- ======== main-wrapper start =========== -->
-    <main class="main-wrapper">
+ <main class="main-wrapper">
       <!-- ========== header start ========== -->
       <header class="header">
         <div class="container-fluid">
@@ -161,7 +189,7 @@ $list = $bookC->listebook();
             <div class="row align-items-center">
               <div class="col-md-6">
                 <div class="title">
-                  <h2>Book Store Dashboard</h2>
+                  <h2>Update book page</h2>
                 </div>
               </div>
               <!-- end col -->
@@ -170,10 +198,10 @@ $list = $bookC->listebook();
                   <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                       <li class="breadcrumb-item">
-                        <a href="#0">Dashboard</a>
+                        <a href="bookList.php">Dashboard</a>
                       </li>
                       <li class="breadcrumb-item active" aria-current="page">
-                        Book Store
+                       Update
                       </li>
                     </ol>
                   </nav>
@@ -183,114 +211,91 @@ $list = $bookC->listebook();
             </div>
             <!-- end row -->
           </div>
-          <!-- ========== title-wrapper end ========== -->
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="card-style mb-30">
-                <div class="title d-flex flex-wrap justify-content-between align-items-center">
-                  <div class="left">
-                    <h6 class="text-medium mb-30">Books List</h6>
-                  </div>
-                  <div class="right">
-                    <a href="addBook.php" class="main-btn primary-btn btn-hover">
-                      <i class="lni lni-plus me-2"></i> Add New Book
-                    </a>
-                  </div>
-                </div>
-                <!-- End Title -->
-                <div class="table-responsive">
-                  <table class="table top-selling-table">
-                    <thead>
-                      <tr>
-                        <th>
-                          <h6 class="text-sm text-medium">ID</h6>
-                        </th>
-                        <th>
-                          <h6 class="text-sm text-medium">Title</h6>
-                        </th>
-                        <th class="min-width">
-                          <h6 class="text-sm text-medium">Author</h6>
-                        </th>
-                        <th class="min-width">
-                          <h6 class="text-sm text-medium">Publication Date</h6>
-                        </th>
-                        <th class="min-width">
-                          <h6 class="text-sm text-medium">Language</h6>
-                        </th>
-                        <th class="min-width">
-                          <h6 class="text-sm text-medium">Status</h6>
-                        </th>
-                        <th class="min-width">
-                          <h6 class="text-sm text-medium">Copies</h6>
-                        </th>
-                        <th class="min-width">
-                          <h6 class="text-sm text-medium">Category</h6>
-                        </th>
-                        <th>
-                          <h6 class="text-sm text-medium text-end">Actions</h6>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php
-                        foreach($list as $book)
-                        {
-                      ?>
-                      <tr>
-                        <td>
-                          <p class="text-sm"><?php echo $book['id']; ?></p>
-                        </td>
-                        <td>
-                          <p class="text-sm"><?php echo $book['title']; ?></p>
-                        </td>
-                        <td>
-                          <p class="text-sm"><?php echo $book['author']; ?></p>
-                        </td>
-                        <td>
-                          <p class="text-sm"><?php echo $book['publication_date']; ?></p>
-                        </td>
-                        <td>
-                          <p class="text-sm"><?php echo $book['langue']; ?></p>
-                        </td>
-                        <td>
-                          <?php if($book['status'] == 'available'): ?>
-                            <span class="status-btn success-btn">Available</span>
-                          <?php else: ?>
-                            <span class="status-btn close-btn">Unavailable</span>
-                          <?php endif; ?>
-                        </td>
-                        <td>
-                          <p class="text-sm"><?php echo $book['copies']; ?></p>
-                        </td>
-                        <td>
-                          <p class="text-sm"><?php echo $book['category']; ?></p>
-                        </td>
-                        <td>
-                          <div class="action justify-content-end">
-                            <form method="POST" action="updateBook.php" style="display: inline;">
-                              <input type="hidden" value="<?php echo $book['id']; ?>" name="id">
-                              <button type="submit" name="update" class="edit">
-                                <i class="lni lni-pencil"></i>
-                              </button>
-                            </form>
-                            <a href="deleteBook.php?id=<?php echo $book['id']; ?>" class="more-btn ml-10">
-                              <i class="lni lni-trash-can"></i>
-                            </a>
-                          </div>
-                        </td>
-                      </tr>
-                      <?php
-                        }
-                      ?>
-                    </tbody>
-                  </table>
-                  <!-- End Table -->
-                </div>
-              </div>
-            </div>
-            <!-- End Col -->
+       <div class="content">
+    
+    <!-- Topbar -->
+  
+
+    <!-- Form Card -->
+    <div class="container mt-4">
+      
+        <form action="" method="POST">
+          <!-- ID (Hidden) -->
+          <input type="hidden" name="id" value="<?php echo $_POST['id'] ?? ($book['id'] ?? ''); ?>">
+
+          <!-- Title -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Enter book title" value="<?php echo $book['title'] ?? ''; ?>" >
           </div>
-          <!-- End Row -->
+
+          <!-- Author -->
+          <div class="mb-3">
+            <label for="author" class="form-label">Author</label>
+            <input type="text" class="form-control" id="author" name="author" placeholder="Enter author's name" value="<?php echo $book['author'] ?? ''; ?>" >
+          </div>
+
+          <!-- Publication Date -->
+          <div class="mb-3">
+            <label for="publication_date" class="form-label">Publication Date</label>
+            <input type="date" class="form-control" id="publication_date" name="publication_date" value="<?php echo $book['publication_date'] ?? ''; ?>" >
+          </div>
+
+          <!-- Language -->
+          <div class="mb-3">
+            <label class="form-label">Language</label><br>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="langAN" name="language" value="AN" <?php echo (isset($book['langue']) && $book['langue']==='AN')?'checked':''; ?>>
+              <label class="form-check-label" for="langAN">AN</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="langFR" name="language" value="FR" <?php echo (isset($book['langue']) && $book['langue']==='FR')?'checked':''; ?>>
+              <label class="form-check-label" for="langFR">FR</label>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-select" id="status" name="status">
+              <option value="available" <?php echo (isset($book['status']) && $book['status']==='available')?'selected':''; ?>>Available</option>
+              <option value="unavailable" <?php echo (isset($book['status']) && $book['status']==='unavailable')?'selected':''; ?>>Unavailable</option>
+            </select>
+          </div>
+
+          <!-- Number of Copies -->
+          <div class="mb-3">
+            <label for="copies" class="form-label">Number of Copies</label>
+            <input type="number" class="form-control" id="copies" name="copies" placeholder="Enter number of copies" value="<?php echo $book['copies'] ?? '1'; ?>" min="1" >
+          </div>
+
+          <!-- Category -->
+          <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" id="category" name="category">
+              <option value="Science" <?php echo (isset($book['category']) && $book['category']==='Science')?'selected':''; ?>>Science</option>
+              <option value="Literature" <?php echo (isset($book['category']) && $book['category']==='Literature')?'selected':''; ?>>Literature</option>
+              <option value="Technology" <?php echo (isset($book['category']) && $book['category']==='Technology')?'selected':''; ?>>Technology</option>
+              <option value="History" <?php echo (isset($book['category']) && $book['category']==='History')?'selected':''; ?>>History</option>
+              <option value="Arts" <?php echo (isset($book['category']) && $book['category']==='Arts')?'selected':''; ?>>Arts</option>
+            </select>
+          </div>
+
+          <!-- Submit -->
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary" >
+              <i class="bi bi-pencil-square"></i> Update Book
+            </button>
+            <a href="ListBook.php" class="btn btn-secondary ms-2">
+              <i class="bi bi-arrow-left"></i> Cancel
+            </a>
+          </div>
+        </form>
+
+     
+    </div>
+
+  </div>
         </div>
         <!-- end container -->
       </section>
@@ -324,9 +329,11 @@ $list = $bookC->listebook();
       </footer>
       <!-- ========== footer end =========== -->
     </main>
-    <!-- ======== main-wrapper end =========== -->
 
-    <!-- ========= All Javascript files linkup ======== -->
+  <!-- Main content -->
+ 
+
+ <!-- ========= All Javascript files linkup ======== -->
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/Chart.min.js"></script>
     <script src="assets/js/dynamic-pie-chart.js"></script>
@@ -336,7 +343,5 @@ $list = $bookC->listebook();
     <script src="assets/js/world-merc.js"></script>
     <script src="assets/js/polyfill.js"></script>
     <script src="assets/js/main.js"></script>
-  </body>
+</body>
 </html>
-
-
